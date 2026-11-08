@@ -14,10 +14,10 @@ Define a route's actions once. Get typed submission callbacks, discriminated res
 ## Installation
 
 ```sh
-npm install react-router-intents react react-dom react-router@7
+npm install react-router-intents react react-dom react-router
 ```
 
-Requirements: React 19, React Router 7.18.3 or newer within v7, and a data router such as `createBrowserRouter`. This is an ESM package with TypeScript declarations. Development and CI use Node 22.12+, with a Node 22/24/26 matrix.
+Requirements: React 19, React Router 7.18.3 or newer (v7 or v8), and a data router such as `createBrowserRouter`. This is an ESM package with TypeScript declarations. Development and CI use Node 22.12+ (React Router 8 itself needs 22.22+), with a Node 22/24/26 matrix against React Router 7 and 8.
 
 No router framework plugin, server rendering, or additional provider is required. Import everything from `react-router-intents`; internal modules are not public entrypoints.
 

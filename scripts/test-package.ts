@@ -30,10 +30,13 @@ try {
   );
 
   const manifest = JSON.parse(readFileSync(join(packageRoot, 'package.json'), 'utf8'));
-  const lock = JSON.parse(readFileSync(join(packageRoot, 'package-lock.json'), 'utf8'));
+  // Installed versions, so a CI lane that swaps the React Router major tests that major.
   const version = (name: string): string => {
-    const value: unknown = lock.packages[`node_modules/${name}`]?.version;
-    assert(typeof value === 'string', `Missing locked version for ${name}`);
+    const installed = JSON.parse(
+      readFileSync(join(packageRoot, 'node_modules', name, 'package.json'), 'utf8')
+    );
+    const value: unknown = installed.version;
+    assert(typeof value === 'string', `Missing installed version for ${name}`);
     return value;
   };
   writeFileSync(
@@ -52,6 +55,7 @@ try {
         devDependencies: {
           typescript: version('typescript'),
           '@types/react': version('@types/react'),
+          '@types/react-dom': version('@types/react-dom'),
           '@types/node': version('@types/node'),
         },
       },
@@ -82,7 +86,7 @@ try {
 import assert from 'node:assert/strict';
 import { createActionFactory, createActions, defaultActionTransport, ActionRequestError } from 'react-router-intents';
 import type { ActionTransport } from 'react-router-intents';
-import { useActionData } from 'react-router';
+import { RouterContextProvider, useActionData } from 'react-router';
 
 const transport: ActionTransport = defaultActionTransport;
 assert.equal(typeof transport.encode, 'function');
@@ -103,7 +107,7 @@ function verifyPublicTypes(result: Result) {
   return result.errors.join(',');
 }
 const result = await actions.action({
-  params: { id: '123' }, context: {}, url: new URL('http://localhost/save'), pattern: '/save',
+  params: { id: '123' }, context: new RouterContextProvider(), url: new URL('http://localhost/save'), pattern: '/save',
   request: new Request('http://localhost/save', {
     method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ intent: 'save', body: { name: 'Published package' } }),

@@ -15,13 +15,14 @@ concurrency:
 
 jobs:
   verify:
-    name: Node ${{ matrix.node }}
+    name: Node ${{ matrix.node }}, React Router ${{ matrix.router }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         node: [22.x, 24.x, 26.x]
+        router: ['7', '8']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -31,4 +32,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci
+      # The lockfile pins React Router 8; this lane verifies the v7 side of the peer range.
+      - if: matrix.router == '7'
+        run: npm install --no-save --no-audit --no-fund react-router@7
       - run: npm run verify

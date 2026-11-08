@@ -6,6 +6,7 @@ import {
   createMemoryRouter,
   data,
   isRouteErrorResponse,
+  RouterContextProvider,
   RouterProvider,
   useFetcher,
   useRouteError,
@@ -33,7 +34,7 @@ const requestFor = (intent = 'save', body: unknown = {}) =>
 function actionArgs(
   request: Request,
   params: ActionFunctionArgs['params'] = {},
-  context = {}
+  context: ActionFunctionArgs['context'] = new RouterContextProvider()
 ): ActionFunctionArgs {
   return { request, params, context, url: new URL(request.url), pattern: '/groups/:id' };
 }
@@ -208,7 +209,7 @@ it('preserves thrown native data when an error mapper is configured', async () =
 });
 
 it('keeps the original Request readable and passes the full action context', async () => {
-  const context = { tenant: 'example-tenant' };
+  const context = new RouterContextProvider();
   const request = requestFor('save', { name: 'Cardiology' });
   const actions = createActions<{ id: string }>()({
     save: {
